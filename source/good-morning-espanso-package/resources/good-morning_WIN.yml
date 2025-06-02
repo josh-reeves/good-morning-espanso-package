@@ -4,6 +4,7 @@ parent: default
 matches:
   - trigger: ":img-morning"
     image_path: "$CONFIG\\match\\packages\\good-morning\\resources\\test.png"
+    image_path: "$CONFIG\\match\\packages\\good-morning\\resources\\test.png"
 
   - trigger: ":morning"
     replace: "{{output}}"
