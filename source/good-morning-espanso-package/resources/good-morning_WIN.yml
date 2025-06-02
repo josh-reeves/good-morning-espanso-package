@@ -1,0 +1,15 @@
+name: Good_Morning
+parent: default
+
+matches:
+  - trigger: ":img-morning"
+    image_path: "$CONFIG\\match\\packages\\good-morning-game\\resources\\test.png"
+
+  - trigger: ":morning"
+    replace: "{{output}}"
+    vars:
+      - name: output
+        type: shell
+        params:
+          cmd: "%APPDATA%\\espanso\\match\\packages\\good-morning-game\\good-morning-game.exe"
+          shell: cmd
