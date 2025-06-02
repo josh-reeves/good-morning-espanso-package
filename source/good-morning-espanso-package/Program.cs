@@ -16,12 +16,12 @@ class Program
                fridaysFile = Path.Combine(resourcesFolder, "fridays.txt");
 
         Random random = new Random();
-        System.Diagnostics.Process process = new Process()
+        System.Diagnostics.Process curl = new Process()
         {
             StartInfo = new ProcessStartInfo()
             {
                 FileName = "cmd.exe",
-                Arguments = "/C curl -o /resources/tmp.png ",
+                Arguments = $"/C curl -o resources/tmp.gif https://raw.githubusercontent.com/josh-reeves/good-morning-espanso-package/refs/heads/main/images/{random.Next(1, 8)}.gif",
                 WindowStyle = ProcessWindowStyle.Hidden
 
             }
@@ -73,6 +73,8 @@ class Program
             Console.WriteLine($"\n{fridayGreetings[random.Next(0, fridayGreetings.Count - 1)]}");
         else
             Console.WriteLine($"\n{generalGreetings[random.Next(0, generalGreetings.Count - 1)]}");
+
+        curl.Start();
 
     }
 
