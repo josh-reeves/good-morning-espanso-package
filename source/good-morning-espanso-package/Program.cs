@@ -21,8 +21,7 @@ class Program
             StartInfo = new ProcessStartInfo()
             {
                 FileName = "cmd.exe",
-                Arguments = $"/C curl -o resources/tmp.gif https://raw.githubusercontent.com/josh-reeves/good-morning-espanso-package/refs/heads/main/images/{random.Next(1, 8)}.gif",
-                WindowStyle = ProcessWindowStyle.Hidden
+                Arguments = $"/C curl -o {Path.Combine(resourcesFolder, "tmp.gif")} https://raw.githubusercontent.com/josh-reeves/good-morning-espanso-package/refs/heads/main/images/{random.Next(1, 8)}.gif",
 
             }
 
