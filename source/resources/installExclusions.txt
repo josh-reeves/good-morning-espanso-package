@@ -1,0 +1,2 @@
+installExclusions.txt
+\.venv

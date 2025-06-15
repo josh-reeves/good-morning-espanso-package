@@ -10,10 +10,10 @@ ECHO "Creating extension directory"
 MKDIR %extPath%
 
 ECHO "Installing extension"
-XCOPY ..\good_morning.py %extPath% /s
-XCOPY ..\resources "%extPath%\resources\" /s
+XCOPY ..\ %extPath% /s /exclude:installExclusions.txt
 
 ECHO "Cleaning up"
 DEL "%extPath%\resources\Install_*"
 
 ECHO "Finished"
+

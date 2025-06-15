@@ -1,6 +1,7 @@
 import random
 import datetime
 import os
+import subprocess
 
 # region Dependency Definitions
 class Node:
@@ -126,5 +127,9 @@ elif (datetime.date.today().weekday() == 4):
     print(f"\n{fridayGreetings[random.randint(0, fridayGreetings.__len__() - 1)]}")    
 else:
     print(f"\n{generalGreetings[0]}")
+
+imagePath = os.path.join(os.path.dirname(__file__), "resources", "tmp.gif")
+
+# subprocess.run(["curl", "https://raw.githubusercontent.com/josh-reeves/good-morning-espanso-package/refs/heads/main/images/1.gif", "-o", imagePath])
 
 # endregion
