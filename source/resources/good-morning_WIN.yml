@@ -9,7 +9,8 @@ matches:
     replace: "{{output}}"
     vars:
       - name: output
-        type: shell
+        type: script
         params:
-          cmd: "%APPDATA%\\espanso\\match\\packages\\good-morning\\good-morning-espanso-package.exe"
-          shell: cmd
+          args:
+            - python
+            - "%CONFIG%\\match\\packages\\good-morning\\good_morning.py"
