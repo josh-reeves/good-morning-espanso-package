@@ -96,9 +96,15 @@ generalGreetings = list()
 mondayGreetings = list()
 fridayGreetings = list()
 
+# Uses GitHub API to pull list of images in gif directory of repository. This can be used to dynamically obtain the total number of 
+# images in the directory later:
 gifList = json.loads(subprocess.run(["curl", "https://api.github.com/repos/josh-reeves/good-morning-espanso-package/contents/images", "-s"], capture_output=True).stdout.decode())
 
-for name in open(file=os.path.join(os.path.dirname(__file__), "resources", "names.txt"), encoding="utf-8-sig"):
+# For each name in the names file, check to see if the name includes tagChr. If the name is tagged, add it to the tagged list in the 
+# order it appears in the original file. Otherwise, either append or prepend the name to the shuffle list depending on whether a 
+# random value between 0 and 99 is even or odd. This builds the list in a semi-random order and prevents the need to shuffle the 
+# values later on:
+for name in open(file=os.path.join(os.path.dirname(__file__), "names.txt"), encoding="utf-8-sig"):
     if (name.__contains__(tagChar)):
         tagged.append(name[name.index(tagChar)+ 1:].rstrip())
     elif (random.randint(0, 99) % 2 == 0):
@@ -106,16 +112,16 @@ for name in open(file=os.path.join(os.path.dirname(__file__), "resources", "name
     else:
         shuffle.prepend(name.rstrip())
 
-for greeting in open(file=os.path.join(os.path.dirname(__file__), "resources", "personalGreetings.txt"), encoding="utf-8-sig"):
+for greeting in open(file=os.path.join(os.path.dirname(__file__), "personalGreetings.txt"), encoding="utf-8-sig"):
     personalGreetings.append(greeting.rstrip())
 
-for greeting in open(file=os.path.join(os.path.dirname(__file__), "resources", "generalGreetings.txt"), encoding="utf-8-sig"):
+for greeting in open(file=os.path.join(os.path.dirname(__file__), "generalGreetings.txt"), encoding="utf-8-sig"):
     generalGreetings.append(greeting.rstrip())
 
-for greeting in open(file=os.path.join(os.path.dirname(__file__), "resources", "mondayGreetings.txt"), encoding="utf-8-sig"):
+for greeting in open(file=os.path.join(os.path.dirname(__file__), "mondayGreetings.txt"), encoding="utf-8-sig"):
     mondayGreetings.append(greeting.rstrip())
 
-for greeting in open (file=os.path.join(os.path.dirname(__file__), "resources", "fridayGreetings.txt"), encoding="utf-8-sig"):
+for greeting in open (file=os.path.join(os.path.dirname(__file__), "fridayGreetings.txt"), encoding="utf-8-sig"):
     fridayGreetings.append(greeting.rstrip())
 
 for name in (tagged + shuffle):
@@ -128,6 +134,7 @@ elif (datetime.date.today().weekday() == 4):
 else:
     print(f"\n{generalGreetings[0]}")
 
-subprocess.run(["curl", f"https://raw.githubusercontent.com/josh-reeves/good-morning-espanso-package/refs/heads/main/images/{random.randint(1, gifList.__len__())}.gif", "-s", "-o", os.path.join(os.path.dirname(__file__), "resources", "tmp.gif")])
+# Attempt to curl a random gif from the gif directory
+subprocess.run(["curl", f"https://raw.githubusercontent.com/josh-reeves/good-morning-espanso-package/refs/heads/main/images/{random.randint(1, gifList.__len__())}.gif", "-s", "-o", os.path.join(os.path.dirname(__file__), "tmp.gif")])
 
 # endregion

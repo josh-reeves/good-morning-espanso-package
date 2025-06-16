@@ -10,7 +10,8 @@ ECHO "Creating extension directory"
 MKDIR %extPath%
 
 ECHO "Installing extension"
-XCOPY ..\ %extPath% /s /exclude:installExclusions.txt
+XCOPY ..\good-morning.yml %extPath% /s /exclude:installExclusions.txt
+XCOPY ..\resources\ "%extPath%\resources\" /s /exclude:installExclusions.txt
 
 ECHO "Cleaning up"
 DEL "%extPath%\resources\Install_*"
