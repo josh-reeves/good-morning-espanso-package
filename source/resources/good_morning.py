@@ -98,16 +98,6 @@ fridayGreetings = list()
 
 config = json.loads(open(file=os.path.join(os.path.dirname(__file__), "config.json"), encoding="utf-8-sig").read())
 
-print( f"https://api.github.com/repos/{config["repo"]}/contents/{config["path"]}/{f"?ref={config["branch"]}" if config["branch"] != "" else ""}")
-
-# Uses GitHub API to pull list of images in gif directory of repository. This can be used to dynamically obtain the total number of 
-# images in the directory later:
-try:
-    gifList = json.loads(subprocess.run(["curl", f"https://api.github.com/repos/{config["repo"]}/contents/{config["path"]}{f"?ref={config["branch"]}" if config["branch"] != "" else ""}" , "-s"], capture_output=True).stdout.decode())
-    
-except Exception as ex:
-    print(f"Failed to download list of GIFs:\n{ex}")
-
 # For each name in the names file, check to see if the name includes tagChr. If the name is tagged, add it to the tagged list in the 
 # order it appears in the original file. Otherwise, either append or prepend the name to the shuffle list depending on whether a 
 # random value between 0 and 99 is even or odd. This builds the list in a semi-random order and prevents the need to shuffle the 
@@ -142,11 +132,20 @@ elif (datetime.date.today().weekday() == 4):
 else:
     print(f"\n{generalGreetings[0]}")
 
-# Attempt to curl a random gif from the gif directory
-try:
-    subprocess.run(["curl", gifList[random.randint(1, gifList.__len__() - 1)]["download_url"], "-s", "-o", os.path.join(os.path.dirname(__file__), "tmp.gif")])
+if (config["downloadImage"]):
+    # Uses GitHub API to pull list of images in gif directory of repository. This can be used to dynamically obtain the total number of 
+    # images in the directory later:
+    try:
+        gifList = json.loads(subprocess.run(["curl", f"https://api.github.com/repos/{config["repo"]}/contents/{config["path"]}{f"?ref={config["branch"]}" if config["branch"] != "" else ""}" , "-s"], capture_output=True).stdout.decode())
+    
+    except Exception as ex:
+        print(f"Failed to download list of GIFs:\n{ex}")
 
-except Exception as ex:
-    print(f"Failed to download GIF image:\n{ex}")
+    # Attempt to curl a random gif from the gif directory
+    try:
+        subprocess.run(["curl", gifList[random.randint(1, gifList.__len__() - 1)]["download_url"], "-s", "-o", os.path.join(os.path.dirname(__file__), "tmp.gif")])
+
+    except Exception as ex:
+        print(f"Failed to download GIF image:\n{ex}")
 
 # endregion
