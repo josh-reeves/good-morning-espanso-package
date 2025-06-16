@@ -1,6 +1,3 @@
-name: Good_Morning
-parent: default
-
 global_vars:
   - name: sep
     type: script
