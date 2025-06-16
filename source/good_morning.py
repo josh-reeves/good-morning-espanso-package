@@ -2,6 +2,7 @@ import random
 import datetime
 import os
 import subprocess
+import json
 
 # region Dependency Definitions
 class Node:
@@ -18,7 +19,6 @@ class LinkedList:
     def __init__(self):
         self.head: Node = None
         self.tail: Node = None
-        self.iterator: Node = None
 
     def __iter__(self):
         return LinkedListIterator(self)
@@ -41,7 +41,6 @@ class LinkedList:
         self.head.next = temp
 
         self.tail = self.head
-        self.iterator = self.head
 
         return
 
@@ -54,7 +53,6 @@ class LinkedList:
         if (self.head is None):
             self.head = node
             self.tail = self.head
-            self.iterator = self.head
   
             return
         
@@ -98,6 +96,8 @@ generalGreetings = list()
 mondayGreetings = list()
 fridayGreetings = list()
 
+gifList = json.loads(subprocess.run(["curl", "https://api.github.com/repos/josh-reeves/good-morning-espanso-package/contents/images", "-s"], capture_output=True).stdout.decode())
+
 for name in open(file=os.path.join(os.path.dirname(__file__), "resources", "names.txt"), encoding="utf-8-sig"):
     if (name.__contains__(tagChar)):
         tagged.append(name[name.index(tagChar)+ 1:].rstrip())
@@ -128,8 +128,6 @@ elif (datetime.date.today().weekday() == 4):
 else:
     print(f"\n{generalGreetings[0]}")
 
-imagePath = os.path.join(os.path.dirname(__file__), "resources", "tmp.gif")
-
-# subprocess.run(["curl", "https://raw.githubusercontent.com/josh-reeves/good-morning-espanso-package/refs/heads/main/images/1.gif", "-o", imagePath])
+subprocess.run(["curl", f"https://raw.githubusercontent.com/josh-reeves/good-morning-espanso-package/refs/heads/main/images/{random.randint(1, gifList.__len__())}.gif", "-s", "-o", os.path.join(os.path.dirname(__file__), "resources", "tmp.gif")])
 
 # endregion
