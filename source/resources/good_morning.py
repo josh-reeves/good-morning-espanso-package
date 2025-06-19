@@ -1,12 +1,14 @@
 import random
 import datetime
 import os
-import subprocess
+import shutil
 import json
+from urllib import request, response
 from linked_list import LinkedList
 
 # Load config:
-config = json.loads(open(file=os.path.join(os.path.dirname(__file__), "config.json"), encoding="utf-8-sig").read())
+scriptDir = os.path.dirname(__file__)
+config = json.loads(open(file=os.path.join(scriptDir, "config.json"), encoding="utf-8-sig").read())
 
 tagChar: str = config["tagChar"]
 
@@ -19,7 +21,7 @@ fridayGreetings = config["fridayGreetings"]
 # order it appears in the original file. Otherwise, either append or prepend the name to the shuffle list depending on whether a 
 # random value between 0 and 99 is even or odd. This builds the list in a semi-random order and prevents the need to shuffle the 
 # values later on:
-namesFile = open(file=os.path.join(os.path.dirname(__file__), "names.txt"), encoding="utf-8-sig")
+namesFile = open(file=os.path.join(scriptDir, "names.txt"), encoding="utf-8-sig")
 
 tagged: LinkedList = LinkedList()
 shuffle: LinkedList = LinkedList()
@@ -53,7 +55,10 @@ if (config["downloadImage"]):
     # images in the directory and obtain a download URL for the selected image.
     try:
         listURL =  "https://api.github.com/repos/" + config['repo'] + "/contents" + f"/{config['path']}" if config['path'] != "" else "" + f"?ref={config['branch']}" if config['branch'] != "" else ""
-        gifList = json.loads(subprocess.run(["curl", "-s", listURL, "-H", "Accept: application/json", "--ssl-no-revoke"], capture_output=True).stdout.decode())
+        req = request.Request(url=listURL, headers={"Accept": "application/json"}, method="GET")
+
+        with request.urlopen(req) as response:
+            gifList = json.loads(response.read().decode("utf-8"))
     
     except Exception as ex:
         print(f"Failed to download list of repository content. Check \"repo\" and \"path\" values in config.json:\n{ex}")
@@ -61,8 +66,13 @@ if (config["downloadImage"]):
     # Attempt to curl a random gif from the gif directory using the download URL pulled above:
     try:
         downloadURL = random.choice(gifList)["download_url"] 
-        imagePath = os.path.join(os.path.dirname(__file__), "tmp.gif")
-        subprocess.run(["curl", "-s", downloadURL, "-H", "Accept: image/*", "--ssl-no-revoke", "-o", imagePath])
+        req = request.Request(url=downloadURL, headers={"Accept": "image/*"}, method="GET")
+        imageFile = open(file=os.path.join(scriptDir, "tmp.gif"), mode="wb+")
+
+        with request.urlopen(req) as response:
+            shutil.copyfileobj(response, imageFile)
+
+        imageFile.close()
 
     except Exception as ex:
         print(f"Failed to download GIF image:\n{ex}")
