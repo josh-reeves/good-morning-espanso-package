@@ -8,7 +8,10 @@ from linked_list import LinkedList
 
 # Load config:
 scriptDir = os.path.dirname(__file__)
-config = json.loads(open(file=os.path.join(scriptDir, "config.json"), encoding="utf-8-sig").read())
+
+configFile = open(file=os.path.join(scriptDir, "config.json"), encoding="utf-8-sig")
+config = json.loads(configFile.read())
+configFile.close()
 
 tagChar: str = config["tagChar"]
 
@@ -29,8 +32,10 @@ shuffle: LinkedList = LinkedList()
 for name in namesFile:
     if (name.__contains__(tagChar)):
         tagged.append(name[name.index(tagChar)+ 1:].rstrip())
+
     elif (random.randint(0, 99) % 2 == 0):
         shuffle.append(name.rstrip())
+    
     else:
         shuffle.prepend(name.rstrip())
 
@@ -44,8 +49,10 @@ for name in (tagged + shuffle):
 # 0 = Monday and 6 = Sunday.
 if (datetime.date.today().weekday() == 0):
     print(f"\n{random.choice(mondayGreetings)}")
+
 elif (datetime.date.today().weekday() == 4):
     print(f"\n{random.choice(fridayGreetings)}")    
+
 else:
     print(f"\n{random.choice(weekdayGreetings)}")
 
@@ -54,7 +61,12 @@ if (config["downloadImage"]):
     # Uses GitHub API to pull list of images in gif directory of repository. This can be used to dynamically obtain the total number of
     # images in the directory and obtain a download URL for the selected image.
     try:
-        listURL =  "https://api.github.com/repos/" + config['repo'] + "/contents" + f"/{config['path']}" if config['path'] != "" else "" + f"?ref={config['branch']}" if config['branch'] != "" else ""
+        listURL = "https://api.github.com/repos/" \
+            + config['repo'] \
+            + "/contents/" \
+            + config["path"] \
+            + (f"?ref={config['branch']}" if config["branch"] != "" else "")
+        
         req = request.Request(url=listURL, headers={"Accept": "application/json"}, method="GET")
 
         with request.urlopen(req) as response:
