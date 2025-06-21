@@ -9,5 +9,5 @@ matches:
         type: script
         params:
           args:
-            - py
+            - python3
             - "%CONFIG%/match/packages/good-morning/resources/good_morning.py"
