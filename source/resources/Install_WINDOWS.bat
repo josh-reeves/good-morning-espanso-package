@@ -15,6 +15,7 @@ XCOPY ..\resources\ "%extPath%\resources\" /s
 
 ECHO "Cleaning up"
 DEL "%extPath%\resources\Install_*"
+DEL "%extPath%\resources\good-morning.yml_MACOS"
 
 ECHO "Finished"
 

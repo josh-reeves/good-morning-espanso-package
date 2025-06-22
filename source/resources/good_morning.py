@@ -3,6 +3,7 @@ import datetime
 import os
 import shutil
 import json
+import csv
 from urllib import request, response
 from linked_list import LinkedList
 
@@ -13,37 +14,42 @@ configFile = open(file=os.path.join(scriptDir, "config.json"), encoding="utf-8-s
 config = json.loads(configFile.read())
 configFile.close()
 
-tagChar: str = config["tagChar"]
-
 personalGreetings = config["personalGreetings"]
+birthdayGreetings = config["birthdayGreetings"]
 weekdayGreetings = config["weekdayGreetings"]
 mondayGreetings = config["mondayGreetings"]
 fridayGreetings = config["fridayGreetings"]
 
 # For each name in the names file, check to see if the name includes tagChar. If the name is tagged, add it to the tagged list in the 
 # order it appears in the original file. Otherwise, either append or prepend the name to the shuffle list depending on whether a 
-# random value between 0 and 99 is even or odd. This builds the list in a semi-random order and prevents the need to shuffle the 
+# random value between 0 and 99999 is even or odd. This builds the list in a semi-random order and prevents the need to shuffle the 
 # values later on:
-namesFile = open(file=os.path.join(scriptDir, "names.txt"), encoding="utf-8-sig")
+namesFile = open(file=os.path.join(scriptDir, "names.csv"), newline="", encoding="utf-8-sig")
 
 tagged: LinkedList = LinkedList()
 shuffle: LinkedList = LinkedList()
 
-for name in namesFile:
-    if (name.__contains__(tagChar)):
-        tagged.append(name[name.index(tagChar)+ 1:].rstrip())
+reader = csv.DictReader(namesFile)
 
-    elif (random.randint(0, 99) % 2 == 0):
-        shuffle.append(name.rstrip())
+for row in reader:
+    if (row["tagged"] == "true"):
+        tagged.append({"name": row["name"], "birthday": row["birthday"]})
+
+    elif (random.randint(0, 999999) % 2 == 0):
+        shuffle.append({"name": row["name"], "birthday": row["birthday"]})
     
     else:
-        shuffle.prepend(name.rstrip())
+        shuffle.prepend({"name": row["name"], "birthday": row["birthday"]})
 
 namesFile.close()
 
 # Output list of names, prepending each with a random value from the personalGreetings array:
 for name in (tagged + shuffle):
-    print(f"{random.choice(personalGreetings)} {name}!")
+    if (name["birthday"] == datetime.datetime.now().strftime("%m/%d")):
+        print(f"{random.choice(birthdayGreetings)} {name['name']}!")
+
+    else:
+        print(f"{random.choice(personalGreetings)} {name['name']}!")
 
 # Append a message from the weekdayGreetings, mondayGreetings or fridayGreetings array depending on the current day of the week, where
 # 0 = Monday and 6 = Sunday.
@@ -61,11 +67,13 @@ if (config["downloadImage"]):
     # Uses GitHub API to pull list of images in gif directory of repository. This can be used to dynamically obtain the total number of
     # images in the directory and obtain a download URL for the selected image.
     try:
+        branch = (f"?ref={config['branch']}" if config["branch"] != "" else "")
+
         listURL = "https://api.github.com/repos/" \
             + config['repo'] \
             + "/contents/" \
             + config["path"] \
-            + (f"?ref={config['branch']}" if config["branch"] != "" else "")
+            + branch
         
         req = request.Request(url=listURL, headers={"Accept": "application/json"}, method="GET")
 
