@@ -32,7 +32,7 @@ shuffle: LinkedList = LinkedList()
 reader = csv.DictReader(namesFile)
 
 for row in reader:
-    if (row["tagged"] == "true"):
+    if (row["tagged"].lower() == "true"):
         tagged.append({"name": row["name"], "birthday": row["birthday"]})
 
     elif (random.randint(0, 999999) % 2 == 0):
@@ -46,11 +46,21 @@ namesFile.close()
 # Output each name in the tagged and shuffle lists. Check to see if the birth day and month match today. If they do,
 # prepend the name with a greeting from birthdayGreetings. Otherwise, prepend each name with a random value from personalGreetings:
 for name in (tagged + shuffle):
-    if (name["birthday"] == datetime.datetime.now().strftime("%m/%d")):
-        print(f"{random.choice(birthdayGreetings)} {name['name']}!")
+    try:
+        birthday = name["birthday"]
+        month = birthday[0:birthday.index('/')]
+        day = birthday[birthday.index('/') + 1:]
 
-    else:
-        print(f"{random.choice(personalGreetings)} {name['name']}!")
+        date = datetime.datetime(month = int(month), day = int(day), year = datetime.MINYEAR)
+
+        if (date.strftime("%m/%d") == datetime.datetime.now().strftime("%m/%d")):
+            print(f"{random.choice(birthdayGreetings)} {name['name']}!")
+
+        else:
+            print(f"{random.choice(personalGreetings)} {name['name']}!")
+
+    except Exception as ex:
+        print(ex)
 
 # Append a message from the weekdayGreetings, mondayGreetings or fridayGreetings array depending on the current day of the week, where
 # 0 = Monday and 6 = Sunday.
